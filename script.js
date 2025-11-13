@@ -1,4 +1,4 @@
-// Selecionando os formulários e links
+// Selecionando elementos
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const showRegister = document.getElementById('show-register');
@@ -17,7 +17,17 @@ showLogin.addEventListener('click', (e) => {
     loginForm.classList.remove('hidden');
 });
 
-// Validação simples do formulário de login
+// Recupera usuários do localStorage
+function getUsers() {
+    return JSON.parse(localStorage.getItem('users')) || [];
+}
+
+// Salva usuários no localStorage
+function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
+// Validação de login
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -32,16 +42,18 @@ loginForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // Simulação de login
-    if (email === 'teste@devweb.com' && password === '123456') {
-        alert('Login realizado com sucesso!');
+    const users = getUsers();
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        alert(`Bem-vindo, ${user.name}!`);
         loginForm.reset();
     } else {
         errorMsg.textContent = 'Email ou senha incorretos.';
     }
 });
 
-// Validação simples do formulário de cadastro
+// Validação e cadastro de novo usuário
 registerForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -64,10 +76,23 @@ registerForm.addEventListener('submit', (e) => {
         return;
     }
 
+    const users = getUsers();
+    const emailExists = users.some(u => u.email === email);
+
+    if (emailExists) {
+        errorMsg.textContent = 'Este email já está cadastrado.';
+        return;
+    }
+
+    // Cria novo usuário
+    const newUser = { name, email, dob, password };
+    users.push(newUser);
+    saveUsers(users);
+
     alert('Cadastro realizado com sucesso!');
     registerForm.reset();
 
-    // Voltar para tela de login
+    // Volta para tela de login
     registerForm.classList.add('hidden');
     loginForm.classList.remove('hidden');
 });
