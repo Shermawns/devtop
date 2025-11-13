@@ -48,6 +48,12 @@ loginForm.addEventListener('submit', (e) => {
     if (user) {
         alert(`Bem-vindo, ${user.name}!`);
         loginForm.reset();
+
+        // Salva o usuário logado no localStorage
+        localStorage.setItem('loggedUser', JSON.stringify(user));
+
+        // Redireciona para o dashboard
+        window.location.href = 'dashboard.html';
     } else {
         errorMsg.textContent = 'Email ou senha incorretos.';
     }
